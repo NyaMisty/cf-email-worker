@@ -25,19 +25,19 @@ wrangler publish
 
 #### Set up a webhook
 
-- Right-click on a Discord channel then click `Edit Channel`, then `Integrations`.
-- Create a webhook, then copy the URL.
-- Add this url to your secrets:
+- PUSHURL: your ServerChan URL
+- PUSHCHAN: your send channel (for pushoo-chan only, leave unset or blank for others)
 
 ```bash
-wrangler secret put DISCORD_WEBHOOK_URL
+wrangler secret put PUSHURL
+wrangler secret put PUSHCHAN
 ```
 
 You should see something like this
 
 ```console
 🌀 Creating the secret for the Worker "email-worker"
-✨ Success! Uploaded secret DISCORD_WEBHOOK_URL
+✨ Success! Uploaded secret PUSHURL
 ```
 
 #### Set up a route
