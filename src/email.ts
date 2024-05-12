@@ -16,14 +16,19 @@ export async function email(message: any, env: any, ctx?: any): Promise<void> {
     // BugFix: Replace "UTF-8" with "utf-8" to prevent letterparser from throwing an error for some messages.
     const rawEmail = (await new Response(message.raw).text()).replace(/utf-8/gi, 'utf-8');
     const email = parseRawEmail(rawEmail);
-    console.log(JSON.stringify(email))
+    console.log(`Extracted email: ${JSON.stringify(email)}`);
 
     // Send discord message
     const intro = `FROM: ${from} TO: ${to} SUBJECT: \`${subject}\``;
-    console.log(email.text!)
-    const [body = '(empty body)', ...rest] = splitEllipsis(email.text || email.html, DISC_MAX_LEN, DISC_MAX_LEN - intro.length);
+    console.log(`Got email text: ${email.text!}`)
+    console.log(`Got email html: ${email.html!}`)
+    var emailBody = email.text || ''
+    if (emailBody.length < 20) { // doesn't like a real email
+      emailBody = email.html || ''
+    } 
+    const [body = '(empty body)', ...rest] = splitEllipsis(emailBody, DISC_MAX_LEN, DISC_MAX_LEN - intro.length);
     const totalBody = [body, ...rest]
-    console.log(totalBody)
+    console.log(`Final msg body: ${totalBody}`)
     for (var i = 0; i < totalBody.length; i++) {
       let _intro = intro
       if (rest.length) {
@@ -35,7 +40,7 @@ export async function email(message: any, env: any, ctx?: any): Promise<void> {
         desp: `\`\`\`${_body}\`\`\``,
         chan: chan
       }
-      console.log(reqbody)
+      console.log(`Final push request body: ${reqbody}`)
       await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
